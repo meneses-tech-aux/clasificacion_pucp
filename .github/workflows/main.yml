@@ -1,0 +1,23 @@
+name: Ejecutar Robot Pandora
+on: 
+  workflow_dispatch: # Esto habilita el botón manual
+
+jobs:
+  automation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build and Run Docker
+        env:
+          PUCP_USER: ${{ secrets.PUCP_USER }} # Configura esto en Settings > Secrets
+          PUCP_PASS: ${{ secrets.PUCP_PASS }}
+        run: |
+          docker build -t robot-pucp .
+          docker run -e PUCP_USER=$PUCP_USER -e PUCP_PASS=$PUCP_PASS robot-pucp
+      
+      - name: Subir Resultados
+        uses: actions/upload-artifact@v3
+        with:
+          name: reporte-alumnos
+          path: resultado_proceso.csv
